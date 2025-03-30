@@ -1,9 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="16dp">
+
+    <ImageButton
+        android:id="@+id/profileButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@android:drawable/ic_menu_myplaces"
+        android:background="@null"
+        android:contentDescription="@string/ver_perfil"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="8dp" />
 
     <TextView
         android:id="@+id/welcomeText"
@@ -11,13 +20,14 @@
         android:layout_height="wrap_content"
         android:text="@string/bienvenido"
         android:textSize="24sp"
-        android:layout_gravity="center_horizontal"
-        android:padding="16dp" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="80dp" />
 
     <Button
         android:id="@+id/logoutButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/cerrar_sesi_n"
-        android:layout_marginTop="20dp"/>
-</LinearLayout>
+        android:layout_below="@id/welcomeText"
+        android:layout_marginTop="20dp" />
+</RelativeLayout>
