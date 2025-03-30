@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">Logistic_regresion</string>
+    <string name="correo_electr_nico">Correo electrónico</string>
+    <string name="contrase_a">Contraseña</string>
+    <string name="iniciar_sesi_n">Iniciar sesión</string>
+    <string name="app_logo">Logo de la aplicación</string>
+    <string name="nombre_usuario">Nombre de usuario</string>
+    <string name="registrarse">Registrarse</string>
+    <string name="ya_tienes_cuenta">¿Ya tienes cuenta? Inicia sesión</string>
+    <string name="olvidaste_contrase_a">¿Olvidaste tu contraseña?</string>
+    <string name="no_tienes_cuenta">¿No tienes cuenta? Regístrate</string>
+
+    <string name="enviar">Enviar</string>
+
+    <string name="reset_password_message">Ingresa tu correo electrónico para restablecer tu contraseña</string>
+    <string name="nueva_contrase_a">Nueva contraseña</string>
+    <string name="confirmar_contrase_a">Confirmar contraseña</string>
+    <string name="cambiar_contrase_a">Cambiar contraseña</string>
+
+    <string name="verification_title">Verificación de código</string>
+    <string name="verification_message">Ingresa el código de 6 dígitos enviado a tu correo electrónico</string>
+    <string name="verificar">Verificar</string>
+    <string name="reenviar_codigo">Reenviar código</string>
+    <string name="codigo_invalido">Código inválido</string>
+    <string name="codigo_reenviado">Código reenviado</string>
+
+    <string name="bienvenido">Bienvenido</string>
+    <string name="cerrar_sesi_n">Cerrar Sesión</string>
+
+</resources>
