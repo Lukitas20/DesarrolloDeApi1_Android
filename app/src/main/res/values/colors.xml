@@ -16,4 +16,8 @@
     <color name="divider_color">#1F000000</color>
     <color name="card_background">#FFFFFF</color>
     <color name="input_background">#F5F5F5</color>
+
+    <!-- New colors -->
+    <color name="red">#FF0000</color>
+    <color name="colorAccent">#FF4081</color>
 </resources>
