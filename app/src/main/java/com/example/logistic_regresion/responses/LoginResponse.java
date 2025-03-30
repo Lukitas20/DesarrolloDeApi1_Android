@@ -4,7 +4,6 @@ public class LoginResponse {
     private String token;
     private long expirationTime;
 
-    // Getters and setters
     public String getToken() {
         return token;
     }

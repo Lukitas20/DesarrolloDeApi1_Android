@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.logistic_regresion.clients.ApiClient;
+import com.example.logistic_regresion.requests.ForgotPasswordRequest;
 import com.example.logistic_regresion.services.AuthService;
 import com.example.logistic_regresion.requests.LoginRequest;
 import com.example.logistic_regresion.responses.LoginResponse;
@@ -21,6 +22,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -110,41 +112,35 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void sendResetPasswordRequest(String email) {
-        Map<String, String> emailMap = new HashMap<>();
-        // Make sure to use the correct key that the backend expects
-        emailMap.put("email", email.toLowerCase().trim());
-
-        if (authService == null) {
-            authService = ApiClient.getClient(this).create(AuthService.class);
+        if (email.isEmpty()) {
+            Toast.makeText(this, "Por favor ingrese su email", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        Call<Void> call = authService.requestPasswordReset(emailMap);
-        call.enqueue(new Callback<Void>() {
+        ForgotPasswordRequest request = new ForgotPasswordRequest(email);
+        authService.requestPasswordReset(request).enqueue(new Callback<Map<String, String>>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
                 if (response.isSuccessful()) {
-                    Toast.makeText(LoginActivity.this,
-                            "Código de verificación enviado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Código enviado a su email", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(LoginActivity.this, VerificationCodeActivity.class);
                     intent.putExtra("email", email);
                     intent.putExtra("isPasswordReset", true);
                     startActivity(intent);
                 } else {
                     try {
-                        Log.e(TAG, "Error body: " + response.errorBody().string());
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error reading error body", e);
+                        Log.e(TAG, "Error: " + (response.errorBody() != null ? response.errorBody().string() : "Unknown error"));
+                        Toast.makeText(LoginActivity.this, "Error al enviar el código", Toast.LENGTH_SHORT).show();
+                    } catch (IOException e) {
+                        Log.e(TAG, "Error reading error response", e);
                     }
-                    Toast.makeText(LoginActivity.this,
-                            "Error al enviar el código", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Log.e(TAG, "Network error: " + t.getMessage(), t);
-                Toast.makeText(LoginActivity.this,
-                        "Error de conexión", Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<Map<String, String>> call, Throwable t) {
+                Log.e(TAG, "Network error", t);
+                Toast.makeText(LoginActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
             }
         });
     }
