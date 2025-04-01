@@ -14,4 +14,8 @@
     <color name="divider_color">#1FFFFFFF</color>
     <color name="card_background">#2D2D2D</color>
     <color name="input_background">#1F1F1F</color>
+
+    <!-- Primary colors -->
+    <color name="colorPrimary">#9C4DFF</color>
+    <color name="colorPrimaryDark">#7B1FA2</color>
 </resources>

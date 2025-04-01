@@ -27,4 +27,6 @@
     <string name="bienvenido">Bienvenido</string>
     <string name="cerrar_sesi_n">Cerrar Sesión</string>
     <string name="ver_perfil">Ver perfil</string>
+    <string name="ver_configuraciones">Ver configuraciones</string>
+    <string name="settings">Configuraciones</string>
 </resources>
