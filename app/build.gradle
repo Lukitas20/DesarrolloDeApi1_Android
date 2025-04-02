@@ -1,6 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
     alias(libs.plugins.android.application)
+    id 'com.google.dagger.hilt.android'
 }
 
 android {
@@ -30,7 +31,6 @@ android {
 }
 
 dependencies {
-
     implementation libs.appcompat
     implementation libs.material
     implementation libs.retrofit
@@ -39,6 +39,12 @@ dependencies {
     implementation libs.logging.interceptor
     implementation libs.material.v1110
     implementation libs.material.v1120
+    implementation libs.security.crypto
+
+    // Dagger Hilt
+    implementation 'com.google.dagger:hilt-android:2.48'
+    annotationProcessor 'com.google.dagger:hilt-android-compiler:2.48'
+
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core

@@ -17,7 +17,6 @@ public class SignupResponse {
     private boolean accountNonExpired;
     private boolean credentialsNonExpired;
 
-    // Getters
     public Long getId() {
         return id;
     }
