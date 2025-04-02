@@ -1,6 +1,5 @@
 package com.example.logistic_regresion.activities;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,10 +8,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.logistic_regresion.clients.ApiClient;
+import com.example.logistic_regresion.repositories.TokenRepository;
 import com.example.logistic_regresion.requests.ForgotPasswordRequest;
 import com.example.logistic_regresion.services.AuthService;
 import com.example.logistic_regresion.requests.LoginRequest;
@@ -23,27 +22,37 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
+
+    @Inject
+    TokenRepository tokenRepository;
+
     private EditText emailEditText, passwordEditText;
     private Button loginButton;
     private TextView registerButton, resetPasswordLink;
     private AuthService authService;
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         authService = ApiClient.getClient(this).create(AuthService.class);
+
+        if (tokenRepository.hasToken()) {
+            navigateToHome();
+            return;
+        }
 
         emailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
@@ -69,11 +78,9 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     String token = response.body().getToken();
+                    tokenRepository.saveToken(token);
                     Toast.makeText(LoginActivity.this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                    intent.putExtra("TOKEN", token);
-                    startActivity(intent);
-                    finish();
+                    navigateToHome();
                 } else {
                     Toast.makeText(LoginActivity.this, "Credenciales incorrectas", Toast.LENGTH_SHORT).show();
                 }
@@ -81,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-                Log.e(TAG, "Login error", t);
+                Log.e("LoginActivity", "Login error", t);
                 Toast.makeText(LoginActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
             }
         });
@@ -143,5 +150,11 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void navigateToHome() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
