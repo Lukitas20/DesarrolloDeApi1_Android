@@ -12,10 +12,15 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.logistic_regresion.clients.ApiClient;
+import com.example.logistic_regresion.requests.ResendVerificationRequest;
+import com.example.logistic_regresion.requests.VerifyResetCodeRequest;
 import com.example.logistic_regresion.services.AuthService;
 import com.example.logistic_regresion.R;
 import com.example.logistic_regresion.requests.VerifyRequest;
 import com.google.android.material.button.MaterialButton;
+
+import java.io.IOException;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -93,29 +98,76 @@ public class VerificationCodeActivity extends AppCompatActivity {
     }
 
     private void verifyCode() {
-        StringBuilder code = new StringBuilder();
+        StringBuilder codeBuilder = new StringBuilder();
         for (EditText digit : digits) {
-            code.append(digit.getText());
+            codeBuilder.append(digit.getText());
         }
 
-        if (code.length() != 6) {
+        if (codeBuilder.length() != 6) {
             Toast.makeText(this, "Por favor ingrese el código completo", Toast.LENGTH_SHORT).show();
             return;
         }
 
         verifyButton.setEnabled(false);
-        VerifyRequest request = new VerifyRequest(email, code.toString());
+        String code = codeBuilder.toString().trim();
+
+        if (isPasswordReset) {
+            verifyResetCode(code);
+        } else {
+            verifyRegistrationCode(code);
+        }
+    }
+
+    private void verifyResetCode(String code) {
+        VerifyResetCodeRequest request = new VerifyResetCodeRequest(email, code);
+
+        authService.verifyResetCode(request).enqueue(new Callback<Map<String, Boolean>>() {
+            @Override
+            public void onResponse(Call<Map<String, Boolean>> call, Response<Map<String, Boolean>> response) {
+                verifyButton.setEnabled(true);
+                if (response.isSuccessful() && response.body() != null &&
+                        Boolean.TRUE.equals(response.body().get("verified"))) {
+
+                    Intent intent = new Intent(VerificationCodeActivity.this, ResetPasswordActivity.class);
+                    intent.putExtra("email", email);
+                    intent.putExtra("code", code);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    try {
+                        Log.e(TAG, "Error: " + (response.errorBody() != null ? response.errorBody().string() : "Unknown error"));
+                    } catch (IOException e) {
+                        Log.e(TAG, "Error reading error response", e);
+                    }
+                    Toast.makeText(VerificationCodeActivity.this, "Código inválido", Toast.LENGTH_SHORT).show();
+                    clearDigits();
+                    digits[0].requestFocus();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Map<String, Boolean>> call, Throwable t) {
+                Log.e(TAG, "Network error", t);
+                verifyButton.setEnabled(true);
+                Toast.makeText(VerificationCodeActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void verifyRegistrationCode(String code) {
+        VerifyRequest request = new VerifyRequest(email, code);
 
         authService.verifyCode(request).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 verifyButton.setEnabled(true);
                 if (response.isSuccessful()) {
-                    handleSuccessfulVerification(code.toString());
+                    handleSuccessfulVerification(code);
                 } else {
                     try {
-                        Log.e(TAG, "Error response: " + response.code() + " - " + response.errorBody().string());
-                    } catch (Exception e) {
+                        Log.e(TAG, "Error response: " + response.code() + " - " +
+                                (response.errorBody() != null ? response.errorBody().string() : "Unknown error"));
+                    } catch (IOException e) {
                         Log.e(TAG, "Error reading error body", e);
                     }
                     Toast.makeText(VerificationCodeActivity.this,
@@ -135,6 +187,7 @@ public class VerificationCodeActivity extends AppCompatActivity {
         });
     }
 
+
     private void handleSuccessfulVerification(String code) {
         if (isPasswordReset) {
             Intent intent = new Intent(this, ResetPasswordActivity.class);
@@ -153,19 +206,24 @@ public class VerificationCodeActivity extends AppCompatActivity {
     private void resendVerificationCode() {
         resendCode.setEnabled(false);
 
-        authService.resendCode(email).enqueue(new Callback<Void>() {
+        String codeType = isPasswordReset ? "passwordReset" : "verification";
+
+        ResendVerificationRequest request = new ResendVerificationRequest(email, codeType);
+
+        authService.resendVerificationCode(request).enqueue(new Callback<Map<String, String>>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
                 resendCode.setEnabled(true);
                 if (response.isSuccessful()) {
                     Toast.makeText(VerificationCodeActivity.this,
-                            R.string.codigo_reenviado, Toast.LENGTH_SHORT).show();
+                            "Código reenviado exitosamente", Toast.LENGTH_SHORT).show();
                     clearDigits();
                     digits[0].requestFocus();
                 } else {
                     try {
-                        Log.e(TAG, "Error response: " + response.code() + " - " + response.errorBody().string());
-                    } catch (Exception e) {
+                        Log.e(TAG, "Error response: " + response.code() + " - " +
+                                (response.errorBody() != null ? response.errorBody().string() : "Unknown error"));
+                    } catch (IOException e) {
                         Log.e(TAG, "Error reading error body", e);
                     }
                     Toast.makeText(VerificationCodeActivity.this,
@@ -174,7 +232,7 @@ public class VerificationCodeActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(Call<Map<String, String>> call, Throwable t) {
                 Log.e(TAG, "Network error", t);
                 resendCode.setEnabled(true);
                 Toast.makeText(VerificationCodeActivity.this,
