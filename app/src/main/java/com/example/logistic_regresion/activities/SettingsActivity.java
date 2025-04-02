@@ -7,22 +7,22 @@ import android.widget.Button;
 import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.logistic_regresion.R;
 
 public class SettingsActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getLayoutResource("activity_settings"));
+        setContentView(R.layout.activity_settings);
 
         // Habilitar la flecha de navegación
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        Button logoutButton = findViewById(getIdResource("logoutButton"));
-        Button changePasswordButton = findViewById(getIdResource("changePasswordButton"));
-        TextView userEmail = findViewById(getIdResource("userEmail"));
+        Button logoutButton = findViewById(R.id.logoutButton);
+        Button changePasswordButton = findViewById(R.id.changePasswordButton);
+        TextView userEmail = findViewById(R.id.userEmail);
 
         // Configurar el correo electrónico del usuario
         userEmail.setText("Email: usuario@example.com");
@@ -59,13 +59,5 @@ public class SettingsActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
-    }
-
-    private int getLayoutResource(String name) {
-        return getResources().getIdentifier(name, "layout", getPackageName());
-    }
-
-    private int getIdResource(String name) {
-        return getResources().getIdentifier(name, "id", getPackageName());
     }
 }

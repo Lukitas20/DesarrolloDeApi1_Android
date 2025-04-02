@@ -4,6 +4,17 @@
     android:padding="16dp">
 
     <ImageButton
+        android:id="@+id/settingsButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@android:drawable/ic_menu_preferences"
+        android:background="@null"
+        android:contentDescription="@string/ver_configuraciones"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="8dp" />
+
+    <ImageButton
         android:id="@+id/profileButton"
         android:layout_width="48dp"
         android:layout_height="48dp"

@@ -12,6 +12,7 @@ import com.example.logistic_regresion.R;
 public class HomeActivity extends AppCompatActivity {
     private TextView welcomeText;
     private ImageButton profileButton;
+    private ImageButton settingsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +21,7 @@ public class HomeActivity extends AppCompatActivity {
 
         welcomeText = findViewById(R.id.welcomeText);
         profileButton = findViewById(R.id.profileButton);
+        settingsButton = findViewById(R.id.settingsButton);
 
         // Obtener el token desde el Intent
         Intent intent = getIntent();
@@ -33,7 +35,13 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         profileButton.setOnClickListener(v -> {
-            startActivity(new Intent(HomeActivity.this, ProfileActivity.class));
+            Intent profileIntent = new Intent(HomeActivity.this, ProfileActivity.class);
+            startActivity(profileIntent);
+        });
+
+        settingsButton.setOnClickListener(v -> {
+            Intent settingsIntent = new Intent(HomeActivity.this, SettingsActivity.class);
+            startActivity(settingsIntent);
         });
     }
 

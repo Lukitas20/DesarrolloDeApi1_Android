@@ -29,4 +29,6 @@
     <string name="ver_perfil">Ver perfil</string>
     <string name="ver_configuraciones">Ver configuraciones</string>
     <string name="settings">Configuraciones</string>
+    <string name="ver_configuracion">Ver Configuración</string>
+
 </resources>

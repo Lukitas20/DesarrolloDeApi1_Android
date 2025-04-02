@@ -48,7 +48,8 @@
             android:name=".activities.ProfileActivity"
             android:exported="false" />
 
-        <activity android:name=".activities.SettingsActivity" />
+        <activity
+            android:name=".activities.SettingsActivity" />
 
     </application>
 </manifest>
