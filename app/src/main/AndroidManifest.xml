@@ -45,5 +45,9 @@
             android:launchMode="singleTop"
             android:parentActivityName=".activities.SignupActivity" />
 
+        <activity
+            android:name=".activities.ProfileActivity"
+            android:exported="false" />
+
     </application>
 </manifest>

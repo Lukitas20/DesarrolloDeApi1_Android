@@ -3,7 +3,7 @@ package com.example.logistic_regresion.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.logistic_regresion.R;
@@ -19,7 +19,7 @@ public class HomeActivity extends AppCompatActivity {
     TokenRepository tokenRepository;
 
     private TextView welcomeText;
-    private Button logoutButton;
+    private ImageButton profileButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +27,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         welcomeText = findViewById(R.id.welcomeText);
-        logoutButton = findViewById(R.id.logoutButton);
+        profileButton = findViewById(R.id.profileButton);
 
         // Obtener el token del intent si está disponible
         Intent intent = getIntent();
@@ -45,7 +45,7 @@ public class HomeActivity extends AppCompatActivity {
                 Log.e(TAG, "El token es NULL");
             }
         }
-
+      
         logoutButton.setOnClickListener(v -> logout());
     }
 
