@@ -1,12 +1,8 @@
 package com.example.logistic_regresion.activities;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,41 +33,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         DeliveryAdapter adapter = new DeliveryAdapter(deliveryItemList);
         recyclerView.setAdapter(adapter);
-
-        // Configurar el botón de cerrar sesión
-        Button btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
-        btnCerrarSesion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mostrarDialogoCerrarSesion();
-            }
-        });
-    }
-
-    private void mostrarDialogoCerrarSesion() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Cerrar Sesión")
-                .setMessage("¿Estás seguro de que deseas cerrar sesión?")
-                .setPositiveButton("Sí", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        cerrarSesion();
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
-    }
-
-    private void cerrarSesion() {
-        // Implementa la lógica para cerrar sesión
-        // Por ejemplo, limpiar las preferencias compartidas y redirigir al login
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-        finish();
     }
 
     @Override

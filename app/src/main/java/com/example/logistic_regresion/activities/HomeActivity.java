@@ -20,6 +20,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private TextView welcomeText;
     private ImageButton profileButton;
+    private ImageButton settingsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +29,7 @@ public class HomeActivity extends AppCompatActivity {
 
         welcomeText = findViewById(R.id.welcomeText);
         profileButton = findViewById(R.id.profileButton);
+        settingsButton = findViewById(R.id.settingsButton);
 
         // Obtener el token del intent si está disponible
         Intent intent = getIntent();
@@ -46,7 +48,16 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
       
-        logoutButton.setOnClickListener(v -> logout());
+        profileButton.setOnClickListener(v -> {
+            Intent profileIntent = new Intent(HomeActivity.this, ProfileActivity.class);
+            startActivity(profileIntent);
+        });
+
+        settingsButton.setOnClickListener(v -> {
+            Intent settingsIntent = new Intent(HomeActivity.this, SettingsActivity.class);
+            startActivity(settingsIntent);
+        });
+      
     }
 
     private void logout() {
