@@ -8,8 +8,16 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.logistic_regresion.R;
+import com.example.logistic_regresion.repositories.TokenRepository;
+import javax.inject.Inject;
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class SettingsActivity extends AppCompatActivity {
+
+    @Inject
+    TokenRepository tokenRepository;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +63,10 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void logout() {
+        // Eliminar el token del repositorio
+        tokenRepository.clearToken();
+
+        // Redirigir al usuario a la actividad de inicio de sesión
         Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
