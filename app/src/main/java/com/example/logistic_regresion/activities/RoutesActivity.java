@@ -11,18 +11,26 @@ import com.example.logistic_regresion.R;
 import com.example.logistic_regresion.adapters.RouteAdapter;
 import com.example.logistic_regresion.clients.ApiClient;
 import com.example.logistic_regresion.models.Route;
+import com.example.logistic_regresion.repositories.TokenRepository;
 import com.example.logistic_regresion.services.RouteService;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class RoutesActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private RouteService routeService;
+
+    @Inject
+    TokenRepository tokenRepository; // Inyección de TokenRepository
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +40,8 @@ public class RoutesActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewRoutes);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        routeService = ApiClient.getClient(this).create(RouteService.class);
+        // Inicializar RouteService con TokenRepository
+        routeService = ApiClient.getClient(this, tokenRepository).create(RouteService.class);
 
         fetchRoutes();
     }

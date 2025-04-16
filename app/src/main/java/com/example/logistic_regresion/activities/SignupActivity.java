@@ -10,16 +10,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.logistic_regresion.clients.ApiClient;
+import com.example.logistic_regresion.repositories.TokenRepository;
 import com.example.logistic_regresion.services.AuthService;
 import com.example.logistic_regresion.R;
 import com.example.logistic_regresion.requests.SignupRequest;
 import com.example.logistic_regresion.responses.SignupResponse;
 
 import java.io.IOException;
+import javax.inject.Inject;
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
     private EditText userNameEditText, emailEditText, passwordEditText;
@@ -27,13 +31,17 @@ public class SignupActivity extends AppCompatActivity {
     private TextView loginLink;
     private AuthService authService;
 
+    @Inject
+    TokenRepository tokenRepository; // Inyección de TokenRepository
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-        authService = ApiClient.getClient(this).create(AuthService.class);
+        // Inicializar AuthService con TokenRepository
+        authService = ApiClient.getClient(this, tokenRepository).create(AuthService.class);
 
         userNameEditText = findViewById(R.id.userNameEditText);
         emailEditText = findViewById(R.id.emailEditText);

@@ -7,15 +7,19 @@ import android.widget.Button;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.logistic_regresion.clients.ApiClient;
+import com.example.logistic_regresion.repositories.TokenRepository;
 import com.example.logistic_regresion.services.AuthService;
 import com.example.logistic_regresion.R;
 import com.example.logistic_regresion.requests.ResetPasswordRequest;
 import com.google.android.material.textfield.TextInputEditText;
 import java.util.Map;
+import javax.inject.Inject;
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class ResetPasswordActivity extends AppCompatActivity {
     private static final String TAG = "ResetPasswordActivity";
     private TextInputEditText newPasswordEditText;
@@ -25,12 +29,16 @@ public class ResetPasswordActivity extends AppCompatActivity {
     private String code;
     private AuthService authService;
 
+    @Inject
+    TokenRepository tokenRepository;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reset_password);
 
-        authService = ApiClient.getClient(this).create(AuthService.class);
+        authService = ApiClient.getClient(this, tokenRepository).create(AuthService.class);
+
         email = getIntent().getStringExtra("email");
         code = getIntent().getStringExtra("code");
 
