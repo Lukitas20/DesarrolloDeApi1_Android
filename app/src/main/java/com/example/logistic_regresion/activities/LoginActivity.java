@@ -69,10 +69,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginUser() {
-        String email = emailEditText.getText().toString().trim();
+        String username = emailEditText.getText().toString().trim(); // Cambia el nombre de la variable si es necesario
         String password = passwordEditText.getText().toString().trim();
 
-        Call<LoginResponse> call = authService.loginUser(new LoginRequest(email, password));
+        Call<LoginResponse> call = authService.loginUser(new LoginRequest(username, password));
         call.enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {

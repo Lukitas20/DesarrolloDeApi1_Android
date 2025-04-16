@@ -25,6 +25,17 @@
         android:layout_alignParentTop="true"
         android:layout_margin="8dp" />
 
+    <ImageButton
+        android:id="@+id/routesButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@android:drawable/ic_menu_mapmode"
+        android:background="@null"
+        android:contentDescription="@string/ver_rutas"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/welcomeText"
+        android:layout_marginTop="16dp" />
+
     <TextView
         android:id="@+id/welcomeText"
         android:layout_width="wrap_content"

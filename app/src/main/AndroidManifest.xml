@@ -52,5 +52,9 @@
         <activity
             android:name=".activities.SettingsActivity" />
 
+        <activity
+            android:name=".activities.RoutesActivity"
+            android:exported="false" />
+
     </application>
 </manifest>
