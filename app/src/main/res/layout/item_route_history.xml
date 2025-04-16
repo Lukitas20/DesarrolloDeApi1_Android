@@ -1,25 +1,37 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="16dp"
+    android:background="@drawable/item_background">
 
+    <!-- Texto para origen y destino -->
     <TextView
         android:id="@+id/originDestinationText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Origen - Destino"
-        android:textStyle="bold" />
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/black" />
 
+    <!-- Texto para tiempo de finalización -->
     <TextView
         android:id="@+id/completionTimeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Tiempo de finalización" />
+        android:text="Tiempo: 00:00"
+        android:textSize="14sp"
+        android:textColor="@color/gray" />
 
+    <!-- Texto para pago -->
     <TextView
         android:id="@+id/paymentText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Pago" />
+        android:text="Pago: $0.00"
+        android:textSize="14sp"
+        android:textColor="@color/gray" />
 </LinearLayout>
