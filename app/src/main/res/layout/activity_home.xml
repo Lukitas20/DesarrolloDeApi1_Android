@@ -3,6 +3,17 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
+    <!-- Texto de bienvenida -->
+    <TextView
+        android:id="@+id/welcomeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bienvenido"
+        android:textSize="24sp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="80dp" />
+
+    <!-- Botón de Configuración -->
     <ImageButton
         android:id="@+id/settingsButton"
         android:layout_width="48dp"
@@ -14,6 +25,7 @@
         android:layout_alignParentTop="true"
         android:layout_margin="8dp" />
 
+    <!-- Botón de Perfil -->
     <ImageButton
         android:id="@+id/profileButton"
         android:layout_width="48dp"
@@ -25,6 +37,7 @@
         android:layout_alignParentTop="true"
         android:layout_margin="8dp" />
 
+    <!-- Botón de Rutas Disponibles -->
     <ImageButton
         android:id="@+id/routesButton"
         android:layout_width="48dp"
@@ -36,12 +49,15 @@
         android:layout_below="@id/welcomeText"
         android:layout_marginTop="16dp" />
 
-    <TextView
-        android:id="@+id/welcomeText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/bienvenido"
-        android:textSize="24sp"
+    <!-- Botón de Mis Rutas -->
+    <ImageButton
+        android:id="@+id/myRoutesButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@android:drawable/ic_menu_agenda"
+        android:background="@null"
+        android:contentDescription="@string/ver_mis_rutas"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="80dp" />
+        android:layout_below="@id/routesButton"
+        android:layout_marginTop="16dp" />
 </RelativeLayout>

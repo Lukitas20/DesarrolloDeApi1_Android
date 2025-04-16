@@ -120,7 +120,10 @@ public class TokenRepository {
             Log.e(TAG, "Error clearing token (modern)", e);
         }
     }
-
+    public boolean isTokenValid() {
+        String token = getToken();
+        return token != null && !token.isEmpty();
+    }
     private void clearTokenLegacy() {
         SharedPreferences sharedPreferences = applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         sharedPreferences.edit().remove(KEY_AUTH_TOKEN).apply();

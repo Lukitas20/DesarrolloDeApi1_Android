@@ -14,6 +14,7 @@
         android:theme="@style/Theme.Logistic_regresion"
         tools:targetApi="24">
 
+        <!-- Actividad principal (Login) -->
         <activity
             android:name=".activities.LoginActivity"
             android:exported="true">
@@ -23,38 +24,50 @@
             </intent-filter>
         </activity>
 
+        <!-- Actividad Home -->
         <activity
             android:name=".activities.HomeActivity"
             android:exported="false" />
 
+        <!-- Actividad para restablecer contraseña -->
         <activity
             android:name=".activities.ResetPasswordActivity"
             android:exported="false"
             android:launchMode="singleTop"
             android:parentActivityName=".activities.LoginActivity" />
 
+        <!-- Actividad de registro -->
         <activity
             android:name=".activities.SignupActivity"
             android:exported="false"
             android:launchMode="singleTop"
             android:parentActivityName=".activities.LoginActivity" />
 
+        <!-- Actividad de verificación de código -->
         <activity
             android:name=".activities.VerificationCodeActivity"
             android:exported="false"
             android:launchMode="singleTop"
             android:parentActivityName=".activities.SignupActivity" />
 
+        <!-- Actividad de perfil -->
         <activity
             android:name=".activities.ProfileActivity"
             android:exported="false" />
 
+        <!-- Actividad de configuración -->
         <activity
             android:name=".activities.SettingsActivity" />
 
+        <!-- Actividad de rutas disponibles -->
         <activity
             android:name=".activities.RoutesActivity"
             android:exported="false" />
+
+        <!-- Actividad de mis rutas -->
+        <activity
+            android:name=".activities.MyRoutesActivity"
+            android:exported="false" /> <!-- Agregada aquí -->
 
     </application>
 </manifest>

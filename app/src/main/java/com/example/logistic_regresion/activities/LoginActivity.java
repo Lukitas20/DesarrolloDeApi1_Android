@@ -50,8 +50,13 @@ public class LoginActivity extends AppCompatActivity {
         authService = ApiClient.getClient(this).create(AuthService.class);
 
         if (tokenRepository.hasToken()) {
-            navigateToHome();
-            return;
+            String token = tokenRepository.getToken();
+            if (isTokenValid(token)) {
+                navigateToHome();
+                return;
+            } else {
+                tokenRepository.clearToken(); // Limpia el token inválido
+            }
         }
 
         emailEditText = findViewById(R.id.emailEditText);
@@ -66,6 +71,10 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         });
         resetPasswordLink.setOnClickListener(v -> showResetPasswordDialog());
+    }
+
+    private boolean isTokenValid(String token) {
+        return token != null && !token.isEmpty();
     }
 
     private void loginUser() {

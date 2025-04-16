@@ -5,10 +5,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.logistic_regresion.R;
 import com.example.logistic_regresion.repositories.TokenRepository;
+
 import javax.inject.Inject;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -21,7 +25,8 @@ public class HomeActivity extends AppCompatActivity {
     private TextView welcomeText;
     private ImageButton profileButton;
     private ImageButton settingsButton;
-    private ImageButton routesButton; // Nuevo botón para rutas
+    private ImageButton routesButton;
+    private ImageButton myRoutesButton; // Nuevo botón para "Mis Rutas"
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,12 +36,19 @@ public class HomeActivity extends AppCompatActivity {
         welcomeText = findViewById(R.id.welcomeText);
         profileButton = findViewById(R.id.profileButton);
         settingsButton = findViewById(R.id.settingsButton);
-        routesButton = findViewById(R.id.routesButton); // Inicializa el botón de rutas
+        routesButton = findViewById(R.id.routesButton);
+        myRoutesButton = findViewById(R.id.myRoutesButton); // Inicializa el botón de "Mis Rutas"
 
-        // Configura el evento onClick para el botón de rutas
+        // Configura el evento onClick para el botón de rutas disponibles
         routesButton.setOnClickListener(v -> {
             Intent routesIntent = new Intent(HomeActivity.this, RoutesActivity.class);
             startActivity(routesIntent);
+        });
+
+        // Configura el evento onClick para el botón de "Mis Rutas"
+        myRoutesButton.setOnClickListener(v -> {
+            Intent myRoutesIntent = new Intent(HomeActivity.this, MyRoutesActivity.class);
+            startActivity(myRoutesIntent);
         });
 
         // Código existente para manejar el token
