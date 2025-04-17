@@ -32,6 +32,7 @@
     <string name="ver_configuracion">Ver Configuración</string>
 
     <string name="ver_rutas">Ver Rutas</string>
+    <string name="ver_mis_rutas">Ver Mis Rutas</string>
 
     <string name="profile_image">Imagen de perfil</string>
     <string name="user_name_placeholder">Nombre de usuario</string>

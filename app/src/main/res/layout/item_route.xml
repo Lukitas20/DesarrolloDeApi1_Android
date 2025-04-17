@@ -30,5 +30,40 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Distancia"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        android:paddingBottom="8dp" />
+
+    <!-- Botones de acción -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <!-- Botón para asignar la ruta -->
+        <Button
+            android:id="@+id/assignButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Asignar"
+            android:layout_marginEnd="8dp"
+            android:visibility="visible" />
+
+        <!-- Botón para completar la ruta -->
+        <Button
+            android:id="@+id/completeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Completar"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone" />
+
+        <!-- Botón para cancelar la ruta -->
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancelar"
+            android:visibility="gone" />
+    </LinearLayout>
 </LinearLayout>
