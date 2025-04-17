@@ -31,20 +31,31 @@ android {
 }
 
 dependencies {
+    // AndroidX
     implementation libs.appcompat
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
+    // Material Design
     implementation libs.material
+
+    // Networking
     implementation libs.retrofit
     implementation libs.converter.gson
     implementation libs.okhttp
     implementation libs.logging.interceptor
-    implementation libs.material.v1110
-    implementation libs.material.v1120
+
+    // Security
     implementation libs.security.crypto
 
     // Dagger Hilt
     implementation 'com.google.dagger:hilt-android:2.48'
     annotationProcessor 'com.google.dagger:hilt-android-compiler:2.48'
 
+    // Architecture Components
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
+
+    // Testing
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
