@@ -43,7 +43,8 @@ public class RoutesActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewRoutes);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        routeService = ApiClient.getClient(this).create(RouteService.class);
+        // Inicializar RouteService con TokenRepository
+        routeService = ApiClient.getClient(this, tokenRepository).create(RouteService.class);
 
         fetchRoutes();
     }

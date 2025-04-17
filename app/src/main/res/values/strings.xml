@@ -33,4 +33,10 @@
 
     <string name="ver_rutas">Ver Rutas</string>
     <string name="ver_mis_rutas">Ver Mis Rutas</string>
+
+    <string name="profile_image">Imagen de perfil</string>
+    <string name="user_name_placeholder">Nombre de usuario</string>
+    <string name="user_email_placeholder">Correo electrónico</string>
+    <string name="edit_profile">Editar perfil</string>
+    <string name="logout">Cerrar sesión</string>
 </resources>

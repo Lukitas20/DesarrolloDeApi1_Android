@@ -14,6 +14,8 @@ import com.example.logistic_regresion.models.Route;
 
 import java.util.List;
 
+import com.example.logistic_regresion.models.Route;
+
 public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHolder> {
 
     private List<Route> routes;

@@ -1,6 +1,7 @@
 package com.example.logistic_regresion.services;
 
 import com.example.logistic_regresion.models.Route;
+import com.example.logistic_regresion.responses.RouteHistoryResponse;
 
 import java.util.List;
 
@@ -26,4 +27,7 @@ public interface RouteService {
 
     @POST("routes/{routeId}/cancel")
     Call<Route> cancelRoute(@Path("routeId") Long routeId, @Header("Authorization") String token);
+
+    @GET("routes/history")
+    Call<List<RouteHistoryResponse>> getRouteHistory();
 }

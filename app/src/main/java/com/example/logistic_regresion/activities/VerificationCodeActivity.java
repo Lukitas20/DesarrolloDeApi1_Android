@@ -12,20 +12,25 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.logistic_regresion.clients.ApiClient;
+import com.example.logistic_regresion.repositories.TokenRepository;
 import com.example.logistic_regresion.requests.ResendVerificationRequest;
 import com.example.logistic_regresion.requests.VerifyResetCodeRequest;
+import com.example.logistic_regresion.requests.VerifyRequest;
 import com.example.logistic_regresion.services.AuthService;
 import com.example.logistic_regresion.R;
-import com.example.logistic_regresion.requests.VerifyRequest;
 import com.google.android.material.button.MaterialButton;
 
 import java.io.IOException;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class VerificationCodeActivity extends AppCompatActivity {
     private static final String TAG = "VerificationCode";
     private EditText[] digits;
@@ -34,6 +39,9 @@ public class VerificationCodeActivity extends AppCompatActivity {
     private String email;
     private AuthService authService;
     private boolean isPasswordReset;
+
+    @Inject
+    TokenRepository tokenRepository; // Inyección de TokenRepository
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +58,8 @@ public class VerificationCodeActivity extends AppCompatActivity {
             return;
         }
 
-        authService = ApiClient.getClient(this).create(AuthService.class);
+        // Inicializar AuthService con TokenRepository
+        authService = ApiClient.getClient(this, tokenRepository).create(AuthService.class);
 
         setupViews();
         setupDigitInputs();
@@ -186,7 +195,6 @@ public class VerificationCodeActivity extends AppCompatActivity {
             }
         });
     }
-
 
     private void handleSuccessfulVerification(String code) {
         if (isPasswordReset) {

@@ -1,8 +1,12 @@
 package com.example.logistic_regresion.clients;
 
 import android.content.Context;
+
+import com.example.logistic_regresion.repositories.TokenRepository;
+
 import java.io.File;
 import java.util.concurrent.TimeUnit;
+
 import okhttp3.Cache;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -16,19 +20,32 @@ public class ApiClient {
     private static Retrofit retrofit = null;
     private static final String BASE_URL = "http://10.0.2.2:8080/";
 
-    public static Retrofit getClient(Context context) {
+    public static Retrofit getClient(Context context, TokenRepository tokenRepository) {
         if (retrofit == null) {
             // Crear caché de 5MB
             File cacheDir = new File(context.getCacheDir(), "http-cache");
             Cache cache = new Cache(cacheDir, 5 * 1024 * 1024); // 5MB
+
+            // Interceptor para agregar el token dinámico
+            Interceptor authInterceptor = chain -> {
+                String token = tokenRepository.getToken();
+
+                Request original = chain.request();
+                Request.Builder requestBuilder = original.newBuilder();
+
+                if (token != null) {
+                    requestBuilder.addHeader("Authorization", "Bearer " + token);
+                }
+
+                return chain.proceed(requestBuilder.build());
+            };
 
             // Interceptor de caché
             Interceptor cacheInterceptor = chain -> {
                 Request request = chain.request();
                 Response response = chain.proceed(request);
 
-                // Guardar en caché por 1 día
-                int maxAge = 60 * 60 * 24;
+                int maxAge = 60 * 60 * 24; // 1 día
                 return response.newBuilder()
                         .header("Cache-Control", "public, max-age=" + maxAge)
                         .build();
@@ -40,8 +57,9 @@ public class ApiClient {
 
             OkHttpClient client = new OkHttpClient.Builder()
                     .cache(cache)
+                    .addInterceptor(authInterceptor)
                     .addInterceptor(cacheInterceptor)
-                    .addInterceptor(loggingInterceptor) // Agregar el interceptor de logging
+                    .addInterceptor(loggingInterceptor)
                     .connectTimeout(30, TimeUnit.SECONDS)
                     .readTimeout(30, TimeUnit.SECONDS)
                     .build();

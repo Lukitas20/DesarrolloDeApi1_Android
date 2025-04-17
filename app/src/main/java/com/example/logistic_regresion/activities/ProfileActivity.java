@@ -1,49 +1,79 @@
 package com.example.logistic_regresion.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.util.Log;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.logistic_regresion.R;
-import com.example.logistic_regresion.adapters.DeliveryAdapter;
-import com.example.logistic_regresion.models.DeliveryItem;
+import com.example.logistic_regresion.adapters.RouteHistoryAdapter;
+import com.example.logistic_regresion.clients.ApiClient;
+import com.example.logistic_regresion.repositories.TokenRepository;
+import com.example.logistic_regresion.responses.RouteHistoryResponse;
+import com.example.logistic_regresion.services.RouteService;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
+import dagger.hilt.android.AndroidEntryPoint;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+@AndroidEntryPoint
 public class ProfileActivity extends AppCompatActivity {
+    private RecyclerView historyRecyclerView;
+    private RouteService routeService;
+
+    @Inject
+    TokenRepository tokenRepository; // Inyección de TokenRepository
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        // Habilitar la flecha de navegación
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        // Inicializar RecyclerView
+        historyRecyclerView = findViewById(R.id.historyRecyclerView);
+        historyRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        RecyclerView recyclerView = findViewById(R.id.deliveryHistoryRecyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        // Asignar un adaptador vacío inicialmente
+        RouteHistoryAdapter emptyAdapter = new RouteHistoryAdapter(new ArrayList<>());
+        historyRecyclerView.setAdapter(emptyAdapter);
 
-        List<DeliveryItem> deliveryItemList = new ArrayList<>();
-        deliveryItemList.add(new DeliveryItem("Producto A", "30 minutos", 3));
-        deliveryItemList.add(new DeliveryItem("Producto B", "45 minutos", 4));
-        deliveryItemList.add(new DeliveryItem("Producto C", "25 minutos", 5));
+        // Inicializar el servicio con TokenRepository
+        routeService = ApiClient.getClient(this, tokenRepository).create(RouteService.class);
 
-        DeliveryAdapter adapter = new DeliveryAdapter(deliveryItemList);
-        recyclerView.setAdapter(adapter);
+        // Cargar el historial de rutas
+        fetchRouteHistory();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            // Volver a la actividad principal (HomeActivity)
-            Intent intent = new Intent(this, HomeActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    private void fetchRouteHistory() {
+        routeService.getRouteHistory().enqueue(new Callback<List<RouteHistoryResponse>>() {
+            @Override
+            public void onResponse(Call<List<RouteHistoryResponse>> call, Response<List<RouteHistoryResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Configurar el adaptador con los datos recibidos
+                    RouteHistoryAdapter adapter = new RouteHistoryAdapter(response.body());
+                    historyRecyclerView.setAdapter(adapter);
+                } else {
+                    Log.e("ProfileActivity", "Error: Código de estado " + response.code());
+                    try {
+                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "null";
+                        Log.e("ProfileActivity", "Error body: " + errorBody);
+                    } catch (IOException e) {
+                        Log.e("ProfileActivity", "Error al leer el cuerpo de error", e);
+                    }
+                    Toast.makeText(ProfileActivity.this, "Error al cargar el historial", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<RouteHistoryResponse>> call, Throwable t) {
+                Log.e("ProfileActivity", "Error de conexión", t);
+                Toast.makeText(ProfileActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

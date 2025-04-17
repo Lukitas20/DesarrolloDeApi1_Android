@@ -1,0 +1,9 @@
+<resources>
+    <string name="profile_image">Imagen de perfil</string>
+    <string name="user_name_placeholder">Nombre del Usuario</string>
+    <string name="user_email_placeholder">email@ejemplo.com</string>
+    <string name="edit_profile">Editar Perfil</string>
+    <string name="logout">Cerrar Sesión</string>
+    <string name="edit_profile_description">Editar la información del perfil</string>
+    <string name="logout_description">Cerrar sesión de la cuenta</string>
+</resources>

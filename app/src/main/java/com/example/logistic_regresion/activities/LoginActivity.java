@@ -47,7 +47,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        authService = ApiClient.getClient(this).create(AuthService.class);
+        // Inicializar AuthService con TokenRepository
+        authService = ApiClient.getClient(this, tokenRepository).create(AuthService.class);
 
         if (tokenRepository.hasToken()) {
             String token = tokenRepository.getToken();
@@ -78,8 +79,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginUser() {
-        String username = emailEditText.getText().toString().trim(); // Cambia el nombre de la variable si es necesario
+        String username = emailEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
+
+        if (username.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         Call<LoginResponse> call = authService.loginUser(new LoginRequest(username, password));
         call.enqueue(new Callback<LoginResponse>() {
@@ -91,13 +97,14 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show();
                     navigateToHome();
                 } else {
+                    Log.e(TAG, "Error de inicio de sesión: " + response.code());
                     Toast.makeText(LoginActivity.this, "Credenciales incorrectas", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-                Log.e("LoginActivity", "Login error", t);
+                Log.e(TAG, "Error de conexión", t);
                 Toast.makeText(LoginActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
             }
         });
@@ -128,11 +135,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void sendResetPasswordRequest(String email) {
-        if (email.isEmpty()) {
-            Toast.makeText(this, "Por favor ingrese su email", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         ForgotPasswordRequest request = new ForgotPasswordRequest(email);
         authService.requestPasswordReset(request).enqueue(new Callback<Map<String, String>>() {
             @Override
@@ -145,17 +147,17 @@ public class LoginActivity extends AppCompatActivity {
                     startActivity(intent);
                 } else {
                     try {
-                        Log.e(TAG, "Error: " + (response.errorBody() != null ? response.errorBody().string() : "Unknown error"));
+                        Log.e(TAG, "Error al enviar el código: " + (response.errorBody() != null ? response.errorBody().string() : "Unknown error"));
                         Toast.makeText(LoginActivity.this, "Error al enviar el código", Toast.LENGTH_SHORT).show();
                     } catch (IOException e) {
-                        Log.e(TAG, "Error reading error response", e);
+                        Log.e(TAG, "Error al leer el cuerpo de error", e);
                     }
                 }
             }
 
             @Override
             public void onFailure(Call<Map<String, String>> call, Throwable t) {
-                Log.e(TAG, "Network error", t);
+                Log.e(TAG, "Error de conexión", t);
                 Toast.makeText(LoginActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
             }
         });
