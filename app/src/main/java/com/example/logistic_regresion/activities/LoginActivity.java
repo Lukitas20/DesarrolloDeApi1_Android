@@ -37,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
     @Inject
     TokenRepository tokenRepository;
 
-    private EditText emailEditText, passwordEditText;
+    private EditText usernameEditText, passwordEditText; // Cambiado de emailEditText a usernameEditText
     private Button loginButton;
     private TextView registerButton, resetPasswordLink;
     private AuthService authService;
@@ -60,12 +60,14 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
 
-        emailEditText = findViewById(R.id.emailEditText);
+        // Inicializar vistas
+        usernameEditText = findViewById(R.id.usernameEditText); // Cambiado
         passwordEditText = findViewById(R.id.passwordEditText);
         loginButton = findViewById(R.id.loginButton);
         resetPasswordLink = findViewById(R.id.resetPasswordLink);
         registerButton = findViewById(R.id.signupLink);
 
+        // Configurar listeners
         loginButton.setOnClickListener(v -> loginUser());
         registerButton.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
@@ -79,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginUser() {
-        String username = emailEditText.getText().toString().trim();
+        String username = usernameEditText.getText().toString().trim(); // Cambiado
         String password = passwordEditText.getText().toString().trim();
 
         if (username.isEmpty() || password.isEmpty()) {

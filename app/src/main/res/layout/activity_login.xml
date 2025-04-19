@@ -22,14 +22,15 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/emailEditText"
+            android:id="@+id/usernameEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/correo_electr_nico"
-            android:inputType="textEmailAddress"
-            android:drawableStart="@drawable/ic_email"
+            android:hint="@string/nombre_de_usuario"
+            android:inputType="text"
+            android:drawableStart="@drawable/ic_person"
             android:drawablePadding="8dp" />
     </com.google.android.material.textfield.TextInputLayout>
+
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"

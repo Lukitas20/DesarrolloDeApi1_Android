@@ -15,6 +15,7 @@ import com.example.logistic_regresion.models.Route;
 import com.example.logistic_regresion.repositories.TokenRepository;
 import com.example.logistic_regresion.services.RouteService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -40,33 +41,50 @@ public class MyRoutesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_routes);
 
+        // Habilitar el botón de retroceso en la barra de acción
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         recyclerView = findViewById(R.id.recyclerViewMyRoutes);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Corregido: Pasar el contexto y el TokenRepository
+        // Inicializar el servicio de rutas
         routeService = ApiClient.getClient(this, tokenRepository).create(RouteService.class);
 
         fetchMyRoutes();
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish(); // Finaliza la actividad y regresa al menú principal
+        return true;
+    }
+
     private void fetchMyRoutes() {
         String token = tokenRepository.getToken();
 
-        // Verifica si el token es válido
         if (token == null || token.isEmpty()) {
             Log.e(TAG, "El token es nulo o está vacío");
             Toast.makeText(this, "Error: Sesión expirada. Por favor, inicia sesión nuevamente.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        token = "Bearer " + token; // Agrega el prefijo "Bearer" al token
+        token = "Bearer " + token;
 
         routeService.getMyRoutes(token).enqueue(new Callback<List<Route>>() {
             @Override
             public void onResponse(Call<List<Route>> call, Response<List<Route>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<Route> routes = response.body();
-                    recyclerView.setAdapter(new RouteAdapter(routes, new RouteAdapter.OnRouteActionListener() {
+                    List<Route> allRoutes = response.body();
+                    List<Route> filteredRoutes = new ArrayList<>();
+
+                    // Filtrar rutas completadas manualmente
+                    for (Route route : allRoutes) {
+                        if (!"COMPLETED".equals(route.getStatus())) {
+                            filteredRoutes.add(route);
+                        }
+                    }
+
+                    recyclerView.setAdapter(new RouteAdapter(filteredRoutes, new RouteAdapter.OnRouteActionListener() {
                         @Override
                         public void onAssign(Long routeId) {
                             // No se usa en "Mis Rutas"
@@ -86,7 +104,7 @@ public class MyRoutesActivity extends AppCompatActivity {
                     Log.e(TAG, "Error 401: Sesión expirada o token inválido");
                     Toast.makeText(MyRoutesActivity.this, "Sesión expirada. Por favor, inicia sesión nuevamente.", Toast.LENGTH_SHORT).show();
                     tokenRepository.clearToken();
-                    finish(); // Cierra la actividad y regresa al inicio de sesión
+                    finish();
                 } else {
                     Log.e(TAG, "Error al cargar rutas: " + response.code());
                     Toast.makeText(MyRoutesActivity.this, "Error al cargar tus rutas: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -104,7 +122,6 @@ public class MyRoutesActivity extends AppCompatActivity {
     private void completeRoute(Long routeId) {
         String token = tokenRepository.getToken();
 
-        // Verifica si el token es válido
         if (token == null || token.isEmpty()) {
             Log.e(TAG, "El token es nulo o está vacío");
             Toast.makeText(this, "Error: Sesión expirada. Por favor, inicia sesión nuevamente.", Toast.LENGTH_SHORT).show();
@@ -136,7 +153,6 @@ public class MyRoutesActivity extends AppCompatActivity {
     private void cancelRoute(Long routeId) {
         String token = tokenRepository.getToken();
 
-        // Verifica si el token es válido
         if (token == null || token.isEmpty()) {
             Log.e(TAG, "El token es nulo o está vacío");
             Toast.makeText(this, "Error: Sesión expirada. Por favor, inicia sesión nuevamente.", Toast.LENGTH_SHORT).show();
