@@ -40,6 +40,7 @@ public class MyRoutesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_routes);
+        setTitle("Mis Rutas");
 
         // Habilitar el botón de retroceso en la barra de acción
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
