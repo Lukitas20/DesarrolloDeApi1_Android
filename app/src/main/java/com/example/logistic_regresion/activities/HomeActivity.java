@@ -3,13 +3,13 @@ package com.example.logistic_regresion.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.logistic_regresion.R;
 import com.example.logistic_regresion.repositories.TokenRepository;
+import com.google.android.material.button.MaterialButton;
 
 import javax.inject.Inject;
 
@@ -23,10 +23,10 @@ public class HomeActivity extends AppCompatActivity {
     TokenRepository tokenRepository;
 
     private TextView welcomeText;
-    private ImageButton profileButton;
-    private ImageButton settingsButton;
-    private ImageButton routesButton;
-    private ImageButton myRoutesButton; // Nuevo botón para "Mis Rutas"
+    private MaterialButton profileButton;
+    private MaterialButton settingsButton;
+    private MaterialButton routesButton;
+    private MaterialButton myRoutesButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +37,19 @@ public class HomeActivity extends AppCompatActivity {
         profileButton = findViewById(R.id.profileButton);
         settingsButton = findViewById(R.id.settingsButton);
         routesButton = findViewById(R.id.routesButton);
-        myRoutesButton = findViewById(R.id.myRoutesButton); // Inicializa el botón de "Mis Rutas"
+        myRoutesButton = findViewById(R.id.myRoutesButton);
+
+        // Configura el evento onClick para el botón de perfil
+        profileButton.setOnClickListener(v -> {
+            Intent profileIntent = new Intent(HomeActivity.this, ProfileActivity.class);
+            startActivity(profileIntent);
+        });
+
+        // Configura el evento onClick para el botón de configuración
+        settingsButton.setOnClickListener(v -> {
+            Intent settingsIntent = new Intent(HomeActivity.this, SettingsActivity.class);
+            startActivity(settingsIntent);
+        });
 
         // Configura el evento onClick para el botón de rutas disponibles
         routesButton.setOnClickListener(v -> {
@@ -65,16 +77,6 @@ public class HomeActivity extends AppCompatActivity {
                 Log.e(TAG, "El token es NULL");
             }
         }
-
-        profileButton.setOnClickListener(v -> {
-            Intent profileIntent = new Intent(HomeActivity.this, ProfileActivity.class);
-            startActivity(profileIntent);
-        });
-
-        settingsButton.setOnClickListener(v -> {
-            Intent settingsIntent = new Intent(HomeActivity.this, SettingsActivity.class);
-            startActivity(settingsIntent);
-        });
     }
 
     private void logout() {

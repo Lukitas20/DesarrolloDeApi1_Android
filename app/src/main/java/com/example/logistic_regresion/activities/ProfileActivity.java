@@ -2,6 +2,7 @@ package com.example.logistic_regresion.activities;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,7 +12,9 @@ import com.example.logistic_regresion.adapters.RouteHistoryAdapter;
 import com.example.logistic_regresion.clients.ApiClient;
 import com.example.logistic_regresion.repositories.TokenRepository;
 import com.example.logistic_regresion.responses.RouteHistoryResponse;
+import com.example.logistic_regresion.responses.UserProfileResponse;
 import com.example.logistic_regresion.services.RouteService;
+import com.example.logistic_regresion.services.UserService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +28,8 @@ import retrofit2.Response;
 public class ProfileActivity extends AppCompatActivity {
     private RecyclerView historyRecyclerView;
     private RouteService routeService;
+    private UserService userService; // Servicio para obtener el perfil del usuario
+    private TextView userNameText, userEmailText; // TextViews para nombre y correo
 
     @Inject
     TokenRepository tokenRepository; // Inyección de TokenRepository
@@ -34,6 +39,10 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        // Inicializar TextViews
+        userNameText = findViewById(R.id.userNameText);
+        userEmailText = findViewById(R.id.userEmailText);
+
         // Inicializar RecyclerView
         historyRecyclerView = findViewById(R.id.historyRecyclerView);
         historyRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -42,11 +51,49 @@ public class ProfileActivity extends AppCompatActivity {
         RouteHistoryAdapter emptyAdapter = new RouteHistoryAdapter(new ArrayList<>());
         historyRecyclerView.setAdapter(emptyAdapter);
 
-        // Inicializar el servicio con TokenRepository
+        // Inicializar los servicios con TokenRepository
         routeService = ApiClient.getClient(this, tokenRepository).create(RouteService.class);
+        userService = ApiClient.getClient(this, tokenRepository).create(UserService.class);
+
+        // Cargar el perfil del usuario
+        fetchUserProfile();
 
         // Cargar el historial de rutas
         fetchRouteHistory();
+    }
+
+    private void fetchUserProfile() {
+        userService.getUserProfile().enqueue(new Callback<UserProfileResponse>() {
+            @Override
+            public void onResponse(Call<UserProfileResponse> call, Response<UserProfileResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    String name = response.body().getName();
+                    String email = response.body().getEmail();
+
+                    // Logs para depuración
+                    Log.d("ProfileActivity", "Nombre de usuario recibido: " + name);
+                    Log.d("ProfileActivity", "Correo electrónico recibido: " + email);
+
+                    // Manejar valores nulos o vacíos
+                    if (name == null || name.isEmpty()) {
+                        name = "Nombre no disponible";
+                    }
+
+                    // Actualizar los TextView con los datos del usuario
+                    userNameText.setText(name);
+                    userEmailText.setText(email);
+                } else {
+                    Log.e("ProfileActivity", "Error: Código de estado " + response.code());
+                    Toast.makeText(ProfileActivity.this, "Error al cargar el perfil", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserProfileResponse> call, Throwable t) {
+                Log.e("ProfileActivity", "Error de conexión", t);
+                Toast.makeText(ProfileActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void fetchRouteHistory() {

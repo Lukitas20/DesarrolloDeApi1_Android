@@ -31,7 +31,7 @@ public class RouteHistoryAdapter extends RecyclerView.Adapter<RouteHistoryAdapte
         holder.originDestinationText.setText(route.getOrigin() + " - " + route.getDestination());
         holder.completionTimeText.setText("Tiempo: " + route.getCompletionTime());
         holder.paymentText.setText("Pago: $" + route.getPayment());
-    }
+        holder.orderStatusText.setText("Distancia: " + route.getDistance() + " km");    }
 
     @Override
     public int getItemCount() {
@@ -39,13 +39,14 @@ public class RouteHistoryAdapter extends RecyclerView.Adapter<RouteHistoryAdapte
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView originDestinationText, completionTimeText, paymentText;
+        TextView originDestinationText, completionTimeText, paymentText, orderStatusText;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             originDestinationText = itemView.findViewById(R.id.originDestinationText);
             completionTimeText = itemView.findViewById(R.id.completionTimeText);
             paymentText = itemView.findViewById(R.id.paymentText);
+            orderStatusText = itemView.findViewById(R.id.orderStatusText); // Nuevo campo
         }
     }
 }

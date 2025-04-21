@@ -1,21 +1,14 @@
 package com.example.logistic_regresion.responses;
 
 public class RouteHistoryResponse {
-    private Long routeId;
     private String origin;
     private String destination;
     private String completionTime;
-    private Double payment;
+    private double payment;
+    private String status; // Campo para el estado
+    private double distance; // Campo para la distancia
 
     // Getters y setters
-    public Long getRouteId() {
-        return routeId;
-    }
-
-    public void setRouteId(Long routeId) {
-        this.routeId = routeId;
-    }
-
     public String getOrigin() {
         return origin;
     }
@@ -40,11 +33,27 @@ public class RouteHistoryResponse {
         this.completionTime = completionTime;
     }
 
-    public Double getPayment() {
+    public double getPayment() {
         return payment;
     }
 
-    public void setPayment(Double payment) {
+    public void setPayment(double payment) {
         this.payment = payment;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 }
