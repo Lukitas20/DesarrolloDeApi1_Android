@@ -38,6 +38,11 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        setTitle("Perfil");
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         // Inicializar TextViews
         userNameText = findViewById(R.id.userNameText);
@@ -62,6 +67,11 @@ public class ProfileActivity extends AppCompatActivity {
         fetchRouteHistory();
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed(); // Volver a la actividad anterior
+        return true;
+    }
     private void fetchUserProfile() {
         userService.getUserProfile().enqueue(new Callback<UserProfileResponse>() {
             @Override

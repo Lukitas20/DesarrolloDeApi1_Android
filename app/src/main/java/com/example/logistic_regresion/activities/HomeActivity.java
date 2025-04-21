@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageButton;
 
 import com.example.logistic_regresion.R;
 import com.example.logistic_regresion.repositories.TokenRepository;
@@ -23,8 +24,8 @@ public class HomeActivity extends AppCompatActivity {
     TokenRepository tokenRepository;
 
     private TextView welcomeText;
-    private MaterialButton profileButton;
-    private MaterialButton settingsButton;
+    private AppCompatImageButton profileButton; // Cambiado a AppCompatImageButton
+    private AppCompatImageButton settingsButton; // Cambiado a AppCompatImageButton
     private MaterialButton routesButton;
     private MaterialButton myRoutesButton;
 
@@ -33,9 +34,10 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        setTitle("Menú");
         welcomeText = findViewById(R.id.welcomeText);
-        profileButton = findViewById(R.id.profileButton);
-        settingsButton = findViewById(R.id.settingsButton);
+        profileButton = findViewById(R.id.profileButton); // Cambiado a AppCompatImageButton
+        settingsButton = findViewById(R.id.settingsButton); // Cambiado a AppCompatImageButton
         routesButton = findViewById(R.id.routesButton);
         myRoutesButton = findViewById(R.id.myRoutesButton);
 
