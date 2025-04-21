@@ -30,16 +30,11 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         Button logoutButton = findViewById(R.id.logoutButton);
-        Button changePasswordButton = findViewById(R.id.changePasswordButton);
-        TextView userEmail = findViewById(R.id.userEmail);
 
-        // Configurar el correo electrónico del usuario
-        userEmail.setText("Email: usuario@example.com");
+
 
         logoutButton.setOnClickListener(v -> showLogoutConfirmationDialog());
-        changePasswordButton.setOnClickListener(v -> {
             // Lógica para cambiar la contraseña
-        });
     }
 
     @Override

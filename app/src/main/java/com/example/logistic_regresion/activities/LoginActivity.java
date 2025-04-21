@@ -46,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        setTitle("Iniciar Sesión");
 
         // Inicializar AuthService con TokenRepository
         authService = ApiClient.getClient(this, tokenRepository).create(AuthService.class);
