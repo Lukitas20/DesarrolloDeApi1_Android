@@ -1,13 +1,20 @@
 package com.example.logistic_regresion.activities;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
+import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide;
 import com.example.logistic_regresion.R;
+import com.example.logistic_regresion.adapters.AvatarAdapter;
 import com.example.logistic_regresion.adapters.RouteHistoryAdapter;
 import com.example.logistic_regresion.clients.ApiClient;
 import com.example.logistic_regresion.repositories.TokenRepository;
@@ -15,7 +22,9 @@ import com.example.logistic_regresion.responses.RouteHistoryResponse;
 import com.example.logistic_regresion.responses.UserProfileResponse;
 import com.example.logistic_regresion.services.RouteService;
 import com.example.logistic_regresion.services.UserService;
-import java.io.IOException;
+import com.google.android.material.button.MaterialButton;
+import com.yalantis.ucrop.UCrop;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -26,40 +35,118 @@ import retrofit2.Response;
 
 @AndroidEntryPoint
 public class ProfileActivity extends AppCompatActivity {
+    private static final int PICK_IMAGE_REQUEST = 1;
     private RecyclerView historyRecyclerView;
     private RouteService routeService;
-    private UserService userService; // Servicio para obtener el perfil del usuario
-    private TextView userNameText, userEmailText; // TextViews para nombre y correo
+    private UserService userService;
+    private TextView userNameText, userEmailText;
+    private ImageView profileImage;
+    private MaterialButton editProfileButton;
 
     @Inject
-    TokenRepository tokenRepository; // Inyección de TokenRepository
+    TokenRepository tokenRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        // Inicializar TextViews
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         userNameText = findViewById(R.id.userNameText);
         userEmailText = findViewById(R.id.userEmailText);
+        profileImage = findViewById(R.id.profileImage);
+        editProfileButton = findViewById(R.id.editProfileButton);
 
-        // Inicializar RecyclerView
         historyRecyclerView = findViewById(R.id.historyRecyclerView);
         historyRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        // Asignar un adaptador vacío inicialmente
         RouteHistoryAdapter emptyAdapter = new RouteHistoryAdapter(new ArrayList<>());
         historyRecyclerView.setAdapter(emptyAdapter);
 
-        // Inicializar los servicios con TokenRepository
         routeService = ApiClient.getClient(this, tokenRepository).create(RouteService.class);
         userService = ApiClient.getClient(this, tokenRepository).create(UserService.class);
 
-        // Cargar el perfil del usuario
         fetchUserProfile();
-
-        // Cargar el historial de rutas
         fetchRouteHistory();
+
+        editProfileButton.setOnClickListener(v -> showAvatarSelectionDialog());
+    }
+
+    private void showAvatarSelectionDialog() {
+        // Lista de IDs de las imágenes locales
+        List<Integer> avatarIds = new ArrayList<>();
+        avatarIds.add(R.drawable.avatar1);
+        avatarIds.add(R.drawable.avatar2);
+        avatarIds.add(R.drawable.avatar3);
+        avatarIds.add(R.drawable.avatar4);
+        avatarIds.add(R.drawable.avatar5);
+        avatarIds.add(R.drawable.avatar6);
+        avatarIds.add(R.drawable.avatar7);
+        avatarIds.add(R.drawable.avatar8);
+        avatarIds.add(R.drawable.avatar9);
+        avatarIds.add(R.drawable.avatar10);
+
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        builder.setTitle("Selecciona un avatar");
+
+        RecyclerView recyclerView = new RecyclerView(this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        AvatarAdapter adapter = new AvatarAdapter(avatarIds, id -> {
+            Glide.with(ProfileActivity.this)
+                    .load(id)
+                    .placeholder(R.drawable.placeholder_image)
+                    .error(R.drawable.error_image)
+                    .into(profileImage);
+        });
+        recyclerView.setAdapter(adapter);
+
+        builder.setView(recyclerView);
+        builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+
+    private void openImagePicker() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
+            Uri sourceUri = data.getData();
+            if (sourceUri != null) {
+                File destinationFile = new File(getCacheDir(), "croppedImage.jpg");
+                Uri destinationUri = Uri.fromFile(destinationFile);
+
+                UCrop.of(sourceUri, destinationUri)
+                        .withAspectRatio(1, 1)
+                        .withMaxResultSize(500, 500)
+                        .start(this);
+            }
+        } else if (requestCode == UCrop.REQUEST_CROP && resultCode == RESULT_OK) {
+            Uri resultUri = UCrop.getOutput(data);
+            if (resultUri != null) {
+                profileImage.setImageURI(resultUri);
+            }
+        } else if (requestCode == UCrop.REQUEST_CROP) {
+            Throwable cropError = UCrop.getError(data);
+            if (cropError != null) {
+                Toast.makeText(this, "Error al recortar la imagen: " + cropError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void fetchUserProfile() {
@@ -67,30 +154,28 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<UserProfileResponse> call, Response<UserProfileResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    String name = response.body().getName();
+                    String name = response.body().getUsername();
                     String email = response.body().getEmail();
 
-                    // Logs para depuración
-                    Log.d("ProfileActivity", "Nombre de usuario recibido: " + name);
-                    Log.d("ProfileActivity", "Correo electrónico recibido: " + email);
-
-                    // Manejar valores nulos o vacíos
                     if (name == null || name.isEmpty()) {
                         name = "Nombre no disponible";
                     }
 
-                    // Actualizar los TextView con los datos del usuario
                     userNameText.setText(name);
                     userEmailText.setText(email);
+
+                    Glide.with(ProfileActivity.this)
+                            .load(R.drawable.placeholder_image)
+                            .placeholder(R.drawable.placeholder_image)
+                            .error(R.drawable.error_image)
+                            .into(profileImage);
                 } else {
-                    Log.e("ProfileActivity", "Error: Código de estado " + response.code());
                     Toast.makeText(ProfileActivity.this, "Error al cargar el perfil", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<UserProfileResponse> call, Throwable t) {
-                Log.e("ProfileActivity", "Error de conexión", t);
                 Toast.makeText(ProfileActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
             }
         });
@@ -101,24 +186,17 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<RouteHistoryResponse>> call, Response<List<RouteHistoryResponse>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // Configurar el adaptador con los datos recibidos
                     RouteHistoryAdapter adapter = new RouteHistoryAdapter(response.body());
                     historyRecyclerView.setAdapter(adapter);
                 } else {
-                    Log.e("ProfileActivity", "Error: Código de estado " + response.code());
-                    try {
-                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "null";
-                        Log.e("ProfileActivity", "Error body: " + errorBody);
-                    } catch (IOException e) {
-                        Log.e("ProfileActivity", "Error al leer el cuerpo de error", e);
-                    }
+                    Log.e("API Error", "Código de error: " + response.code());
+                    Log.e("API Error", "Error body: " + response.errorBody());
                     Toast.makeText(ProfileActivity.this, "Error al cargar el historial", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<RouteHistoryResponse>> call, Throwable t) {
-                Log.e("ProfileActivity", "Error de conexión", t);
                 Toast.makeText(ProfileActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
             }
         });

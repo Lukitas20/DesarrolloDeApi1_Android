@@ -1,11 +1,11 @@
 package com.example.logistic_regresion.responses;
 
 public class UserProfileResponse {
-    private String name;
+    private String username;
     private String email;
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
     public String getEmail() {

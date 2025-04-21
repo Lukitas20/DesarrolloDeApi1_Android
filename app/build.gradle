@@ -34,6 +34,7 @@ dependencies {
     // AndroidX
     implementation libs.appcompat
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.github.yalantis:ucrop:2.2.8'
 
     // Material Design
     implementation libs.material
@@ -57,6 +58,10 @@ dependencies {
     // Architecture Components
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
+
+    // Glide (para cargar imágenes)
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
 
     // Testing
     testImplementation libs.junit
