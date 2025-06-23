@@ -49,6 +49,15 @@
             android:layout_marginEnd="8dp"
             android:visibility="visible" />
 
+        <!-- Botón para reportar incidente -->
+        <Button
+            android:id="@+id/reportIncidentButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reportar Incidente"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone" />
+
         <!-- Botón para completar la ruta -->
         <Button
             android:id="@+id/completeButton"

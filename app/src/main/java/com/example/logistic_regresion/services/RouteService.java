@@ -1,5 +1,6 @@
 package com.example.logistic_regresion.services;
 
+import com.example.logistic_regresion.models.Incident;
 import com.example.logistic_regresion.models.Route;
 import com.example.logistic_regresion.responses.RouteHistoryResponse;
 
@@ -30,4 +31,7 @@ public interface RouteService {
 
     @GET("routes/history")
     Call<List<RouteHistoryResponse>> getRouteHistory();
+
+    @POST("routes/report-incident")
+    Call<Incident> reportIncident(@Body Incident incident, @Header("Authorization") String token);
 }

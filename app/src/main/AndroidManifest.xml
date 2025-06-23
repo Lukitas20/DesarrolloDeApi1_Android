@@ -67,7 +67,13 @@
         <!-- Actividad de mis rutas -->
         <activity
             android:name=".activities.MyRoutesActivity"
-            android:exported="false" /> <!-- Agregada aquí -->
+            android:exported="false" />
+
+        <!-- Actividad de reporte de incidentes -->
+        <activity
+            android:name=".activities.ReportIncidentActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.MyRoutesActivity" />
 
     </application>
 </manifest>

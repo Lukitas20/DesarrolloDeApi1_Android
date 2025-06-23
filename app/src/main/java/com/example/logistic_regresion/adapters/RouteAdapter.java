@@ -14,8 +14,6 @@ import com.example.logistic_regresion.models.Route;
 
 import java.util.List;
 
-import com.example.logistic_regresion.models.Route;
-
 public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHolder> {
 
     private List<Route> routes;
@@ -47,20 +45,24 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
             holder.assignButton.setVisibility(View.VISIBLE);
             holder.completeButton.setVisibility(View.GONE);
             holder.cancelButton.setVisibility(View.GONE);
+            holder.reportIncidentButton.setVisibility(View.GONE);
 
             holder.assignButton.setOnClickListener(v -> actionListener.onAssign(route.getId()));
         } else if ("ASSIGNED".equals(route.getStatus())) {
             holder.assignButton.setVisibility(View.GONE);
             holder.completeButton.setVisibility(View.VISIBLE);
             holder.cancelButton.setVisibility(View.VISIBLE);
+            holder.reportIncidentButton.setVisibility(View.VISIBLE);
 
             holder.completeButton.setOnClickListener(v -> actionListener.onComplete(route.getId()));
             holder.cancelButton.setOnClickListener(v -> actionListener.onCancel(route.getId()));
+            holder.reportIncidentButton.setOnClickListener(v -> actionListener.onReportIncident(route.getId()));
         } else {
             // Ocultar todos los botones para otros estados
             holder.assignButton.setVisibility(View.GONE);
             holder.completeButton.setVisibility(View.GONE);
             holder.cancelButton.setVisibility(View.GONE);
+            holder.reportIncidentButton.setVisibility(View.GONE);
         }
     }
 
@@ -71,7 +73,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
 
     public static class RouteViewHolder extends RecyclerView.ViewHolder {
         TextView origin, destination, distance;
-        Button assignButton, completeButton, cancelButton;
+        Button assignButton, completeButton, cancelButton, reportIncidentButton;
 
         public RouteViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -81,6 +83,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
             assignButton = itemView.findViewById(R.id.assignButton);
             completeButton = itemView.findViewById(R.id.completeButton);
             cancelButton = itemView.findViewById(R.id.cancelButton);
+            reportIncidentButton = itemView.findViewById(R.id.reportIncidentButton);
         }
     }
 
@@ -88,5 +91,6 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
         void onAssign(Long routeId);
         void onComplete(Long routeId);
         void onCancel(Long routeId);
+        void onReportIncident(Long routeId);
     }
 }

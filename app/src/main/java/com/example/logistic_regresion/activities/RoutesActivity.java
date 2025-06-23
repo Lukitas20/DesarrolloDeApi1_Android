@@ -79,6 +79,12 @@ public class RoutesActivity extends AppCompatActivity {
                         public void onCancel(Long routeId) {
                             cancelRoute(routeId);
                         }
+
+                        @Override
+                        public void onReportIncident(Long routeId) {
+                            // Not applicable in available routes screen
+                            // This method is only used in MyRoutesActivity
+                        }
                     }));
                 } else {
                     Toast.makeText(RoutesActivity.this, "Error al cargar rutas: " + response.code(), Toast.LENGTH_SHORT).show();

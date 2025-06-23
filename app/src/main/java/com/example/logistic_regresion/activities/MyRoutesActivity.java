@@ -1,9 +1,12 @@
 package com.example.logistic_regresion.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,9 +32,12 @@ import retrofit2.Response;
 public class MyRoutesActivity extends AppCompatActivity {
 
     private static final String TAG = "MyRoutesActivity";
+    private static final int REPORT_INCIDENT_REQUEST = 100;
 
     private RecyclerView recyclerView;
     private RouteService routeService;
+
+    private ActivityResultLauncher<Intent> reportIncidentLauncher;
 
     @Inject
     TokenRepository tokenRepository; // Inyección del repositorio de tokens
@@ -50,6 +56,16 @@ public class MyRoutesActivity extends AppCompatActivity {
 
         // Inicializar el servicio de rutas
         routeService = ApiClient.getClient(this, tokenRepository).create(RouteService.class);
+
+        // Configurar launcher para reportar incidentes
+        reportIncidentLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        // Actualizar la lista después de reportar un incidente
+                        fetchMyRoutes();
+                    }
+                });
 
         fetchMyRoutes();
     }
@@ -99,6 +115,11 @@ public class MyRoutesActivity extends AppCompatActivity {
                         @Override
                         public void onCancel(Long routeId) {
                             cancelRoute(routeId);
+                        }
+
+                        @Override
+                        public void onReportIncident(Long routeId) {
+                            openReportIncidentScreen(routeId);
                         }
                     }));
                 } else if (response.code() == 401) {
@@ -180,5 +201,11 @@ public class MyRoutesActivity extends AppCompatActivity {
                 Toast.makeText(MyRoutesActivity.this, "Error de conexión. Por favor, intenta nuevamente.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void openReportIncidentScreen(Long routeId) {
+        Intent intent = new Intent(this, ReportIncidentActivity.class);
+        intent.putExtra("routeId", routeId);
+        reportIncidentLauncher.launch(intent);
     }
 }
