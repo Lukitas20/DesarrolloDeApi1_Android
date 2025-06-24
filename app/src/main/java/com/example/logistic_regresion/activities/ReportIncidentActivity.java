@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
@@ -43,12 +44,12 @@ import retrofit2.Response;
 public class ReportIncidentActivity extends AppCompatActivity {
 
     private static final String TAG = "ReportIncidentActivity";
-    private static final int CAMERA_PERMISSION_REQUEST = 100;
-    private static final int TAKE_PHOTO_REQUEST = 101;
+    private static final int STORAGE_PERMISSION_REQUEST = 100;
+    private static final int PICK_IMAGE_REQUEST = 101;
 
     private Spinner spinnerIncidentType;
     private EditText editTextDescription;
-    private Button buttonTakePhoto;
+    private Button buttonTakePhoto; // We're keeping the same ID but using it for gallery selection
     private ImageView imageViewPhoto;
     private Button buttonSubmit;
 
@@ -89,8 +90,8 @@ public class ReportIncidentActivity extends AppCompatActivity {
         // Setup incident type spinner
         setupIncidentTypeSpinner();
 
-        // Setup take photo button
-        buttonTakePhoto.setOnClickListener(v -> requestCameraPermission());
+        // Setup gallery button
+        buttonTakePhoto.setOnClickListener(v -> requestGalleryPermission());
 
         // Setup submit button
         buttonSubmit.setOnClickListener(v -> submitIncidentReport());
@@ -122,14 +123,27 @@ public class ReportIncidentActivity extends AppCompatActivity {
         spinnerIncidentType.setAdapter(adapter);
     }
 
-    private void requestCameraPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA},
-                    CAMERA_PERMISSION_REQUEST);
+    private void requestGalleryPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // For Android 13+ (API 33+)
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_MEDIA_IMAGES},
+                        STORAGE_PERMISSION_REQUEST);
+            } else {
+                openGallery();
+            }
         } else {
-            openCamera();
+            // For Android 12 and below
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        STORAGE_PERMISSION_REQUEST);
+            } else {
+                openGallery();
+            }
         }
     }
 
@@ -137,38 +151,42 @@ public class ReportIncidentActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == CAMERA_PERMISSION_REQUEST) {
+        if (requestCode == STORAGE_PERMISSION_REQUEST) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openCamera();
+                openGallery();
             } else {
-                Toast.makeText(this, "Se requiere permiso de cámara para tomar foto",
+                Toast.makeText(this, "Se requiere permiso para acceder a la galería",
                         Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    private void openCamera() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, TAKE_PHOTO_REQUEST);
-        } else {
-            Toast.makeText(this, "No se puede abrir la cámara", Toast.LENGTH_SHORT).show();
-        }
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == TAKE_PHOTO_REQUEST && resultCode == RESULT_OK && data != null) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
+            Uri imageUri = data.getData();
+            if (imageUri != null) {
+                try {
+                    Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
 
-            // Show photo in ImageView
-            imageViewPhoto.setImageBitmap(imageBitmap);
-            imageViewPhoto.setVisibility(View.VISIBLE);
+                    // Show photo in ImageView
+                    imageViewPhoto.setImageBitmap(imageBitmap);
+                    imageViewPhoto.setVisibility(View.VISIBLE);
 
-            // Convert bitmap to Base64 string for upload
-            photoBase64 = bitmapToBase64(imageBitmap);
+                    // Convert bitmap to Base64 string for upload
+                    photoBase64 = bitmapToBase64(imageBitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Error al cargar la imagen", Toast.LENGTH_SHORT).show();
+                }
+            }
         }
     }
 
