@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -31,11 +30,17 @@ import com.example.logistic_regresion.repositories.TokenRepository;
 import com.example.logistic_regresion.services.RouteService;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -54,7 +59,7 @@ public class ReportIncidentActivity extends AppCompatActivity {
     private Button buttonSubmit;
 
     private Long routeId;
-    private String photoBase64;
+    private Uri imageUri;
     private RouteService routeService;
 
     @Inject
@@ -171,7 +176,7 @@ public class ReportIncidentActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
-            Uri imageUri = data.getData();
+            imageUri = data.getData();
             if (imageUri != null) {
                 try {
                     Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
@@ -179,22 +184,12 @@ public class ReportIncidentActivity extends AppCompatActivity {
                     // Show photo in ImageView
                     imageViewPhoto.setImageBitmap(imageBitmap);
                     imageViewPhoto.setVisibility(View.VISIBLE);
-
-                    // Convert bitmap to Base64 string for upload
-                    photoBase64 = bitmapToBase64(imageBitmap);
                 } catch (IOException e) {
                     e.printStackTrace();
                     Toast.makeText(this, "Error al cargar la imagen", Toast.LENGTH_SHORT).show();
                 }
             }
         }
-    }
-
-    private String bitmapToBase64(Bitmap bitmap) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream.toByteArray();
-        return Base64.encodeToString(byteArray, Base64.DEFAULT);
     }
 
     private void submitIncidentReport() {
@@ -206,8 +201,10 @@ public class ReportIncidentActivity extends AppCompatActivity {
             return;
         }
 
-        // Create incident object
-        Incident incident = new Incident(type, description, photoBase64, routeId);
+        if (imageUri == null) {
+            Toast.makeText(this, "Por favor seleccione una imagen", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         // Get token
         String token = tokenRepository.getToken();
@@ -221,34 +218,80 @@ public class ReportIncidentActivity extends AppCompatActivity {
         buttonSubmit.setEnabled(false);
         buttonSubmit.setText("Enviando...");
 
-        // Call API
-        routeService.reportIncident(incident, token).enqueue(new Callback<Incident>() {
-            @Override
-            public void onResponse(Call<Incident> call, Response<Incident> response) {
-                if (response.isSuccessful()) {
+        try {
+            // Create multipart request
+            RequestBody typeBody = RequestBody.create(MediaType.parse("text/plain"), type);
+            RequestBody descriptionBody = RequestBody.create(MediaType.parse("text/plain"), description);
+            RequestBody routeIdBody = RequestBody.create(MediaType.parse("text/plain"), routeId.toString());
+
+            // Create file part from URI
+            File photoFile = createFileFromUri(imageUri);
+            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/jpeg"), photoFile);
+            MultipartBody.Part photoPart = MultipartBody.Part.createFormData("photo", photoFile.getName(), photoRequestBody);
+
+            // Call API with multipart request
+            routeService.reportIncidentMultipart(
+                    typeBody,
+                    descriptionBody,
+                    routeIdBody,
+                    photoPart,
+                    token
+            ).enqueue(new Callback<Incident>() {
+                @Override
+                public void onResponse(Call<Incident> call, Response<Incident> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(ReportIncidentActivity.this,
+                                "Incidente reportado exitosamente", Toast.LENGTH_SHORT).show();
+                        setResult(RESULT_OK);
+                        finish();
+                    } else {
+                        Log.e(TAG, "Error al reportar incidente: " + response.code());
+
+                        // Log more detailed error information for debugging
+                        try {
+                            if (response.errorBody() != null) {
+                                Log.e(TAG, "Error response: " + response.errorBody().string());
+                            }
+                        } catch (IOException e) {
+                            Log.e(TAG, "Error reading error body", e);
+                        }
+
+                        Toast.makeText(ReportIncidentActivity.this,
+                                "Error al reportar incidente: " + response.code(),
+                                Toast.LENGTH_SHORT).show();
+                        buttonSubmit.setEnabled(true);
+                        buttonSubmit.setText("Enviar Reporte");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Incident> call, Throwable t) {
+                    Log.e(TAG, "Error de conexión al reportar incidente", t);
                     Toast.makeText(ReportIncidentActivity.this,
-                            "Incidente reportado exitosamente", Toast.LENGTH_SHORT).show();
-                    setResult(RESULT_OK);
-                    finish();
-                } else {
-                    Log.e(TAG, "Error al reportar incidente: " + response.code());
-                    Toast.makeText(ReportIncidentActivity.this,
-                            "Error al reportar incidente: " + response.code(),
+                            "Error de conexión. Intente nuevamente",
                             Toast.LENGTH_SHORT).show();
                     buttonSubmit.setEnabled(true);
                     buttonSubmit.setText("Enviar Reporte");
                 }
-            }
+            });
+        } catch (Exception e) {
+            Log.e(TAG, "Error preparing multipart request", e);
+            Toast.makeText(this, "Error al preparar la imagen para enviar", Toast.LENGTH_SHORT).show();
+            buttonSubmit.setEnabled(true);
+            buttonSubmit.setText("Enviar Reporte");
+        }
+    }
 
-            @Override
-            public void onFailure(Call<Incident> call, Throwable t) {
-                Log.e(TAG, "Error de conexión al reportar incidente", t);
-                Toast.makeText(ReportIncidentActivity.this,
-                        "Error de conexión. Intente nuevamente",
-                        Toast.LENGTH_SHORT).show();
-                buttonSubmit.setEnabled(true);
-                buttonSubmit.setText("Enviar Reporte");
-            }
-        });
+    private File createFileFromUri(Uri uri) throws IOException {
+        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+        File filesDir = getFilesDir();
+        File imageFile = new File(filesDir, "photo.jpg");
+
+        OutputStream os;
+        os = new FileOutputStream(imageFile);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, os);
+        os.flush();
+        os.close();
+        return imageFile;
     }
 }
