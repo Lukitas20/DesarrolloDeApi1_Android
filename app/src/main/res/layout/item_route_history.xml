@@ -1,10 +1,9 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/item_background"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@drawable/item_background">
+    android:padding="16dp">
 
     <!-- Texto para origen y destino -->
     <TextView
@@ -12,9 +11,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Origen - Destino"
+        android:textColor="@color/black"
         android:textSize="16sp"
-        android:textStyle="bold"
-        android:textColor="@color/black" />
+        android:textStyle="bold" />
 
     <!-- Texto para tiempo de finalización -->
     <TextView
@@ -22,8 +21,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Tiempo: 00:00"
-        android:textSize="14sp"
-        android:textColor="@color/gray" />
+        android:textColor="@color/gray"
+        android:textSize="14sp" />
 
     <!-- Texto para pago -->
     <TextView
@@ -31,8 +30,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Pago: $0.00"
-        android:textSize="14sp"
-        android:textColor="@color/gray" />
+        android:textColor="@color/gray"
+        android:textSize="14sp" />
 
     <!-- Texto para estado del pedido -->
     <TextView
@@ -40,6 +39,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Estado: Completado"
-        android:textSize="14sp"
-        android:textColor="@color/gray" />
+        android:textColor="@color/gray"
+        android:textSize="14sp" />
+    <TextView
+    	android:id="@+id/reviewCommentText"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:text="Comentario de la reseña"
+    	android:textSize="14sp"
+	    android:textColor="@color/gray"
+	    android:layout_marginTop="8dp"/>
+    <RatingBar
+    	android:id="@+id/reviewRatingBar"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:numStars="5"
+    	android:stepSize="1"
+    	android:isIndicator="true"
+    	android:layout_marginTop="4dp" />
+
+    <ImageView
+    	android:id="@+id/reviewImage"
+    	android:layout_width="200dp"
+    	android:layout_height="200dp"
+    	android:layout_marginTop="8dp"
+    	android:scaleType="centerCrop"
+    	android:visibility="gone" />
 </LinearLayout>

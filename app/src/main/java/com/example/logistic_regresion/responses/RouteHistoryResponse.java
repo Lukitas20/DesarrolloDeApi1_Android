@@ -1,5 +1,7 @@
 package com.example.logistic_regresion.responses;
 
+import com.example.logistic_regresion.requests.ReviewRequest;
+
 public class RouteHistoryResponse {
     private String origin;
     private String destination;
@@ -7,6 +9,7 @@ public class RouteHistoryResponse {
     private double payment;
     private String status; // Campo para el estado
     private double distance; // Campo para la distancia
+    private ReviewRequest review;
 
     // Getters y setters
     public String getOrigin() {
@@ -55,5 +58,13 @@ public class RouteHistoryResponse {
 
     public void setDistance(double distance) {
         this.distance = distance;
+    }
+
+    public ReviewRequest getReview() {
+        return review;
+    }
+
+    public void setReview(ReviewRequest review) {
+        this.review = review;
     }
 }
